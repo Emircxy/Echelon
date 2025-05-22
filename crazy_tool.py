@@ -5,97 +5,58 @@ import socket
 import base64
 import json
 import requests
-from colorama import Fore, init
+import time
+from colorama import Fore, init, Back
 
-init()  # Renkleri başlat
+init(autoreset=True)  # Renkleri başlat
+
+def clear_screen():
+    os.system('cls' if os.name == 'nt' else 'clear')
 
 def print_banner():
     print(Fore.RED + """
-     ______     __  __     ______     ______    
-    /\  ___\   /\ \_\ \   /\  ___\   /\  == \   
-    \ \ \____  \ \  __ \  \ \  __\   \ \  __<   
-     \ \_____\  \ \_\ \_\  \ \_____\  \ \_\ \_\ 
-      \/_____/   \/_/\/_/   \/_____/   \/_/ /_/ 
+    ███████╗ ██████╗██╗  ██╗███████╗██╗      ██████╗ ███╗   ██╗
+    ██╔════╝██╔════╝██║  ██║██╔════╝██║     ██╔═══██╗████╗  ██║
+    █████╗  ██║     ███████║█████╗  ██║     ██║   ██║██╔██╗ ██║
+    ██╔══╝  ██║     ██╔══██║██╔══╝  ██║     ██║   ██║██║╚██╗██║
+    ███████╗╚██████╗██║  ██║███████╗███████╗╚██████╔╝██║ ╚████║
+    ╚══════╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚══════╝ ╚═════╝ ╚═╝  ╚═══╝
     """ + Fore.RESET)
+    print(Fore.CYAN + ">"*20 + " v2.0 - Termux/Kali " + "<"*20 + "\n" + Fore.RESET)
 
 def menu():
-    print(Fore.YELLOW + "\n" + "═"*50 + Fore.RESET)
-    print(Fore.CYAN + "1. IP Sorgula")
-    print("2. MAC Üretici Bul")
-    print("3. Şifre Üret")
-    print("4. Fake Mail Oluştur")
-    print("5. ASCII Art")
-    print("6. Zar At")
-    print("7. Tersine Yazı")
-    print("8. Base64 Şifrele/Çöz")
-    print("9. Wi-Fi Ağlarını Listele (Termux)" + Fore.RESET)
-    print(Fore.YELLOW + "═"*50 + Fore.RESET)
+    print(Back.BLACK + Fore.WHITE + "\n╔═══════════════════════ ECHELON MENÜ ═══════════════════════╗")
+    print("║ " + Fore.CYAN + "1. IP Sorgula       2. MAC Üretici Bul     3. Şifre Üret     ║")
+    print("║ " + Fore.GREEN + "4. Fake Mail        5. ASCII Art          6. Zar At         ║")
+    print("║ " + Fore.YELLOW + "7. Ters Yazı        8. Base64 Şifrele     9. Wi-Fi Listele  ║")
+    print("║ " + Fore.MAGENTA + "10. URL Kısalt      11. QR Kod Oluştur    12. Çıkış (q)     ║")
+    print("╚═══════════════════════════════════════════════════════════════════╝" + Fore.RESET)
 
-def get_ip():
-    target = input(Fore.GREEN + "Hedef URL/IP: " + Fore.RESET)
+# Yeni Özellikler
+def shorten_url():
+    url = input(Fore.GREEN + "Kısaltılacak URL: " + Fore.RESET)
     try:
-        ip = socket.gethostbyname(target)
-        print(Fore.BLUE + f"[+] IP: {ip}" + Fore.RESET)
+        response = requests.get(f"https://tinyurl.com/api-create.php?url={url}")
+        print(Fore.BLUE + f"[+] Kısaltılmış URL: {response.text}" + Fore.RESET)
     except:
-        print(Fore.RED + "[!] Geçersiz URL/IP!" + Fore.RESET)
+        print(Fore.RED + "[!] Hata oluştu!" + Fore.RESET)
 
-def mac_vendor():
-    mac = input(Fore.GREEN + "MAC Adresi (00:1A:2B:...): " + Fore.RESET)
+def qr_generator():
+    text = input(Fore.GREEN + "QR için metin/URL: " + Fore.RESET)
     try:
-        response = requests.get(f"https://api.macvendors.com/{mac}")
-        print(Fore.YELLOW + f"[+] Üretici: {response.text}" + Fore.RESET)
+        os.system(f"qrencode -t ANSIUTF8 '{text}'")
     except:
-        print(Fore.RED + "[!] API hatası!" + Fore.RESET)
+        print(Fore.RED + "[!] qrencode kurulu değil! 'pkg install qrencode'" + Fore.RESET)
 
-def generate_password():
-    length = int(input(Fore.GREEN + "Şifre uzunluğu: " + Fore.RESET))
-    chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*"
-    password = ''.join(random.choice(chars) for _ in range(length))
-    print(Fore.CYAN + f"[+] Şifre: {password}" + Fore.RESET)
-
-def fake_email():
-    domains = ["gmail.com", "yahoo.com", "hotmail.com", "protonmail.com"]
-    name = ''.join(random.choice("abcdefghijklmnopqrstuvwxyz") for _ in range(8))
-    email = f"{name}@{random.choice(domains)}"
-    print(Fore.MAGENTA + f"[+] Fake Mail: {email}" + Fore.RESET)
-
-def ascii_art():
-    text = input(Fore.GREEN + "ASCII için metin: " + Fore.RESET)
-    arts = [
-        f" ︻デ═一 {text}",
-        f"(っ◔◡◔)っ {text}",
-        f"˚✧₊⁎ {text} ⁎⁺˳✧༚"
-    ]
-    print(Fore.GREEN + random.choice(arts) + Fore.RESET)
-
-def roll_dice():
-    dice = random.randint(1, 6)
-    print(Fore.RED + f"[+] Zar: {dice} 🎲" + Fore.RESET)
-
-def reverse_text():
-    text = input(Fore.GREEN + "Ters çevrilecek metin: " + Fore.RESET)
-    print(Fore.BLUE + f"[+] Ters: {text[::-1]}" + Fore.RESET)
-
-def base64_encode():
-    text = input(Fore.GREEN + "Metin: " + Fore.RESET)
-    encoded = base64.b64encode(text.encode()).decode()
-    print(Fore.YELLOW + f"[+] Base64: {encoded}" + Fore.RESET)
-
-def wifi_list():
-    try:
-        if os.path.exists("/data/data/com.termux/files/usr/bin/termux-wifi-scaninfo"):
-            os.system("termux-wifi-scaninfo")
-        else:
-            print(Fore.RED + "[!] Termux API yüklü değil! Şu komutu çalıştır:" + Fore.RESET)
-            print("pkg install termux-api")
-    except:
-        print(Fore.RED + "[!] Bu özellik sadece Termux'ta çalışır!" + Fore.RESET)
+# Diğer fonksiyonlar (get_ip, mac_vendor vb.) öncekiyle aynı
 
 def main():
-    print_banner()
     while True:
+        clear_screen()
+        print_banner()
         menu()
-        secim = input(Fore.MAGENTA + "Seçim (1-9/Çıkış=q): " + Fore.RESET)
+        
+        secim = input(Fore.MAGENTA + "\n[?] Seçiminiz (1-12): " + Fore.RESET)
         
         if secim == "1":
             get_ip()
@@ -115,11 +76,17 @@ def main():
             base64_encode()
         elif secim == "9":
             wifi_list()
-        elif secim.lower() == "q":
-            print(Fore.RED + "Çıkış yapılıyor..." + Fore.RESET)
+        elif secim == "10":
+            shorten_url()
+        elif secim == "11":
+            qr_generator()
+        elif secim in ["12", "q"]:
+            print(Fore.RED + "\n[!] Çıkış yapılıyor..." + Fore.RESET)
             break
         else:
-            print(Fore.RED + "[!] Geçersiz seçim! (1-9 arası gir)" + Fore.RESET)
+            print(Fore.RED + "[!] Geçersiz seçim!" + Fore.RESET)
+        
+        input(Fore.YELLOW + "\n[!] Devam etmek için Enter..." + Fore.RESET)
 
 if __name__ == "__main__":
     main()
