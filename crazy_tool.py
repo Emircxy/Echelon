@@ -3,6 +3,8 @@ import os
 import random
 import socket
 import base64
+import json
+import requests
 from colorama import Fore, init
 
 init()  # Renkleri başlat
@@ -26,7 +28,7 @@ def menu():
     print("6. Zar At")
     print("7. Tersine Yazı")
     print("8. Base64 Şifrele/Çöz")
-    print("9. Wi-Fi Ağlarını Listele" + Fore.RESET)
+    print("9. Wi-Fi Ağlarını Listele (Termux)" + Fore.RESET)
     print(Fore.YELLOW + "═"*50 + Fore.RESET)
 
 def get_ip():
@@ -39,12 +41,55 @@ def get_ip():
 
 def mac_vendor():
     mac = input(Fore.GREEN + "MAC Adresi (00:1A:2B:...): " + Fore.RESET)
-    vendors = {"00:00:0C": "Cisco", "00:1A:11": "HP"}
-    prefix = mac[:8].upper()
-    print(Fore.YELLOW + f"[+] Üretici: {vendors.get(prefix, 'Bilinmiyor')}" + Fore.RESET)
+    try:
+        response = requests.get(f"https://api.macvendors.com/{mac}")
+        print(Fore.YELLOW + f"[+] Üretici: {response.text}" + Fore.RESET)
+    except:
+        print(Fore.RED + "[!] API hatası!" + Fore.RESET)
 
-# Diğer fonksiyonlar (generate_password, fake_email, vb.) aynı kalacak.
-# Önceki koddan kopyalayıp yapıştır.
+def generate_password():
+    length = int(input(Fore.GREEN + "Şifre uzunluğu: " + Fore.RESET))
+    chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*"
+    password = ''.join(random.choice(chars) for _ in range(length))
+    print(Fore.CYAN + f"[+] Şifre: {password}" + Fore.RESET)
+
+def fake_email():
+    domains = ["gmail.com", "yahoo.com", "hotmail.com", "protonmail.com"]
+    name = ''.join(random.choice("abcdefghijklmnopqrstuvwxyz") for _ in range(8))
+    email = f"{name}@{random.choice(domains)}"
+    print(Fore.MAGENTA + f"[+] Fake Mail: {email}" + Fore.RESET)
+
+def ascii_art():
+    text = input(Fore.GREEN + "ASCII için metin: " + Fore.RESET)
+    arts = [
+        f" ︻デ═一 {text}",
+        f"(っ◔◡◔)っ {text}",
+        f"˚✧₊⁎ {text} ⁎⁺˳✧༚"
+    ]
+    print(Fore.GREEN + random.choice(arts) + Fore.RESET)
+
+def roll_dice():
+    dice = random.randint(1, 6)
+    print(Fore.RED + f"[+] Zar: {dice} 🎲" + Fore.RESET)
+
+def reverse_text():
+    text = input(Fore.GREEN + "Ters çevrilecek metin: " + Fore.RESET)
+    print(Fore.BLUE + f"[+] Ters: {text[::-1]}" + Fore.RESET)
+
+def base64_encode():
+    text = input(Fore.GREEN + "Metin: " + Fore.RESET)
+    encoded = base64.b64encode(text.encode()).decode()
+    print(Fore.YELLOW + f"[+] Base64: {encoded}" + Fore.RESET)
+
+def wifi_list():
+    try:
+        if os.path.exists("/data/data/com.termux/files/usr/bin/termux-wifi-scaninfo"):
+            os.system("termux-wifi-scaninfo")
+        else:
+            print(Fore.RED + "[!] Termux API yüklü değil! Şu komutu çalıştır:" + Fore.RESET)
+            print("pkg install termux-api")
+    except:
+        print(Fore.RED + "[!] Bu özellik sadece Termux'ta çalışır!" + Fore.RESET)
 
 def main():
     print_banner()
@@ -61,16 +106,13 @@ def main():
         elif secim == "4":
             fake_email()
         elif secim == "5":
-            text = input(Fore.GREEN + "ASCII için metin: " + Fore.RESET)
-            ascii_art(text)
+            ascii_art()
         elif secim == "6":
             roll_dice()
         elif secim == "7":
-            text = input(Fore.GREEN + "Ters çevrilecek metin: " + Fore.RESET)
-            reverse_text(text)
+            reverse_text()
         elif secim == "8":
-            text = input(Fore.GREEN + "Base64 metin: " + Fore.RESET)
-            base64_encode(text)
+            base64_encode()
         elif secim == "9":
             wifi_list()
         elif secim.lower() == "q":
