@@ -1,4 +1,3 @@
-
 import os
 import socket
 import subprocess
@@ -238,6 +237,4 @@ def main():
             show_network_interfaces()
         elif choice == '9':
             show_system_info()
-        elif choice == '10':
-            list_files()
-       
+        elif choice == '
