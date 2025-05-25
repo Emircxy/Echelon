@@ -214,4 +214,3 @@ def main():
         print("25. Basit HTTP sunucusu başlat")
         print("26. Çıkış")
 
-        choice = input("\n
