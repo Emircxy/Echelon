@@ -1,8 +1,4 @@
-Tabii, sana 30 özellikli, büyük "ECHELON" başlıklı, terminalde çalışan Python aracı hazırlayabilirim. Özellikler yasal ve etik sınırlar içinde olacak; IP öğrenme, ping, port taraması, DNS sorgusu, traceroute, sistem bilgisi, dosya listeleme gibi faydalı araçlar olacak.
 
-Aşağıda örnek bir Python scripti var. Çok uzun olduğu için temel yapıyı ve 30 farklı fonksiyonu içeriyor. İstersen detaylarıyla açıklayabilirim veya istediğin özellikleri ekleyip çıkarabiliriz.
-
-```python
 import os
 import socket
 import subprocess
